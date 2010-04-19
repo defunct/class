@@ -5,7 +5,13 @@ import static org.testng.Assert.assertNull;
 
 import org.testng.annotations.Test;
 
+/**
+ * Unit tests for {@link ClassAssociation}.
+ * 
+ * @author Alan Gutierrez
+ */
 public class ClassAssociationTest {
+    /** Test matching a class based on an annotation. */
     @Test
     public void annotated() {
         ClassAssociation<String> association = new ClassAssociation<String>();
@@ -21,6 +27,7 @@ public class ClassAssociationTest {
         assertNull(association.get(Two.class));
     }
     
+    /** Test matching a class exactly. */
     @Test
     public void exact() {
         ClassAssociation<String> association = new ClassAssociation<String>();
@@ -32,6 +39,7 @@ public class ClassAssociationTest {
         assertEquals(association.get(Two.class), "Two");
     }
     
+    /** Test matching a class by super-classes or interfaces. */
     @Test
     public void derived() {
         ClassAssociation<String> association = new ClassAssociation<String>();
@@ -46,6 +54,7 @@ public class ClassAssociationTest {
         assertNull(association.get(Six.class));
     }
  
+    /** Test the copy constructor. */
     @Test
     public void copy() {
         ClassAssociation<String> association = new ClassAssociation<String>();
