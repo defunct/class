@@ -7,6 +7,43 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * Associates a value to a type by either matching the a given class exactly,
+ * mapping an annotation applied to a given class, or by matching the given
+ * class or any of its super-classes or implemented interfaces. These three
+ * different match conditions are specified independently, so that you can chose
+ * to associate by class, by annotation, or by class and its descendants.
+ * <p>
+ * You specify an association by an exact match using the
+ * {@link #exact(Class, Object) exact} method. A match by an annotation applied
+ * to a class is specified using the {@link #annotated(Class, Object) annotated}
+ * method. A match specified by matching any class that is assignable to a given
+ * class is specified by the {@link #assignable(Class, Object) derived} method.
+ * <p>
+ * An exact match will take precedence over an annotation or assignment match.
+ * An annotation match will take precedence over an assignment match.
+ * <p>
+ * This class is thread safe. All associations are stored in concurrent maps so
+ * the behavior associated with concurrent maps, where a value written in one
+ * thread is not yet be readable in another thread until the write is complete,
+ * applies to this class.
+ * <p>
+ * After an association lookup, the result is cached, so that reflection and
+ * class hierarchy navigation does not have to be repeated. Assigning new
+ * associations resets the cache.
+ * <p>
+ * The concurrency model is designed to support the use of the
+ * <code>ClassAssocaition</code> class as a static object. If there is a static
+ * association of helper objects by type, a new class may be loaded by the class
+ * loader, initialize itself in its static initialization block by registering a
+ * helper object for its type, and the helper object would be ready for lookup
+ * by the time an instance of newly loaded object needed its helper object.
+ * 
+ * @author Alan Gutierrez
+ * 
+ * @param <T>
+ *            The type of value associated.
+ */
 public class ClassAssociation<T> {
     /**
      * The classes to their object diffusers as resolved by ascending the object
@@ -67,10 +104,11 @@ public class ClassAssociation<T> {
     }
 
     /**
-     * Map the given <code>value</code> to sub-classes or implementations of the
-     * given <code>type</code>. The value will match a derived association if
-     * there is no exact association or annotation association that matches the
-     * given type.
+     * Map the given <code>value</code> to the given <code>type</code>,
+     * sub-classes of the given <code>type</code> or implementations of the
+     * given <code>type</code> . The value will match an assignable association
+     * if there is no exact association or annotation association that matches
+     * the given <code>type</code> in this class assocition.
      * <p>
      * If a type can match multiple super-classes or interfaces, it will match
      * the first mapping or interface association encountered when inspecting
@@ -92,7 +130,7 @@ public class ClassAssociation<T> {
      * @param converter
      *            The value to associate with the type.
      */
-    public void derived(Class<?> type, T value) {
+    public void assignable(Class<?> type, T value) {
         cache.clear();
         derived.put(type, value);
     }
@@ -101,6 +139,8 @@ public class ClassAssociation<T> {
      * Map the given <code>value</code> to classes annotated with the given
      * <code>annotation</code> type. The value will match a annotated
      * association if there is no exact association that matches the given type.
+     * If a type is annotated by two ore more annotations that have associated
+     * values, their is no telling which of the values will be returned.
      * <p>
      * Annotations applied to super-classes or interfaces implemented by the
      * type will not be considered when determining the match.
@@ -115,8 +155,19 @@ public class ClassAssociation<T> {
         annotated.put(annotation, value);
     }
 
-    private T byInterface(Class<?>[] ifaces) {
-        LinkedList<Class<?>> queue = new LinkedList<Class<?>>(Arrays.asList(ifaces));
+    /**
+     * Scans each of the interfaces in the given array of interfaces and each of
+     * their super-interfaces for an associated value in the map of derived
+     * associations, returning the first association encountered or null if none
+     * is found.
+     * 
+     * @param interfaces
+     *            An array of interfaces to check for associated values.
+     * @return A value associated with one of the interfaces or its
+     *         super-interfaces or null.
+     */
+    private T byInterface(Class<?>[] interfaces) {
+        LinkedList<Class<?>> queue = new LinkedList<Class<?>>(Arrays.asList(interfaces));
         while (!queue.isEmpty()) {
             Class<?> iface = queue.removeFirst();
             T value = derived.get(iface);
@@ -135,7 +186,16 @@ public class ClassAssociation<T> {
      * base class, if you are going to match a base class, why not an interface
      * so annotated as well?
      */
-    
+
+    /**
+     * Scans the given array of annotations in order and returns the associated
+     * value of the first annotation that has an associated value, or null if
+     * none of the associations have an associated value.
+     * 
+     * @param annotations
+     *            An array of annotations to check for associated values.
+     * @return The first associated value found or null.
+     */
     private T byAnnotation(Annotation[] annotations) {
         for (Annotation annotation : annotations) {
             for (Map.Entry<Class<? extends Annotation>, T> entry : annotated.entrySet()) {
@@ -170,9 +230,7 @@ public class ClassAssociation<T> {
             if (value == null) {
                 Class<?> iterator = type;
                 while (iterator != null) {
-                    if (value == null) {
-                        value = derived.get(iterator);
-                    }
+                    value = derived.get(iterator);
                     if (value == null) {
                         value = byInterface(iterator.getInterfaces());
                     }

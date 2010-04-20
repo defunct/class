@@ -43,8 +43,8 @@ public class ClassAssociationTest {
     @Test
     public void derived() {
         ClassAssociation<String> association = new ClassAssociation<String>();
-        association.derived(Four.class, "Four");
-        association.derived(Two.class, "Two");
+        association.assignable(Four.class, "Four");
+        association.assignable(Two.class, "Two");
         
         assertNull(association.get(One.class));
         assertNull(association.get(One.class));
@@ -58,7 +58,7 @@ public class ClassAssociationTest {
     @Test
     public void copy() {
         ClassAssociation<String> association = new ClassAssociation<String>();
-        association.derived(Four.class, "Four");
+        association.assignable(Four.class, "Four");
         association.exact(One.class, "One");
         association.annotated(Three.class, "Three");
 
@@ -70,11 +70,13 @@ public class ClassAssociationTest {
         assertNull(association.get(Six.class));
     }
     
+    /** Test lookup of an array class. */
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void array() {
         new ClassAssociation<String>().get(new Object[0].getClass());
     }
 
+    /** Test lookup of a primitive class. */
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void primitive() {
         new ClassAssociation<String>().get(int.class);
