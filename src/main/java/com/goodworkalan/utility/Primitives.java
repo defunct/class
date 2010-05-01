@@ -1,6 +1,29 @@
 package com.goodworkalan.utility;
 
+/**
+ * Container for a static utility method that converts a primitive Java class to
+ * its corresponding Object based Java class.
+ * 
+ * @author Alan Gutierrez
+ */
 public class Primitives {
+    /**
+     * This is a container for static utility methods and is not meant to be
+     * instantiated.
+     */
+    Primitives() {
+    }
+
+    /**
+     * If the given type is a Java primitive return the associated
+     * <code>java.lang.Object</code> based class, otherwise return the given
+     * type.
+     * 
+     * @param type
+     *            The type to convert to a <code>java.lang.Object</code> derived
+     *            class.
+     * @return An <code>java.lang.Object<code> derived class.
+     */
     public static Class<?> box(Class<?> type) {
         if (type.isPrimitive()) {
             if (long.class.isAssignableFrom(type)) {
