@@ -4,8 +4,18 @@ import com.goodworkalan.mix.ProjectModule;
 import com.goodworkalan.mix.builder.Builder;
 import com.goodworkalan.mix.builder.JavaProject;
 
-public class ClassBoxerProject extends ProjectModule {
-    @Override
+/**
+ * Builds the project definition for Class Boxer.
+ *
+ * @author Alan Gutierrez
+ */
+public class ClassBoxerProject implements ProjectModule {
+    /**
+     * Build the project definition for Class Boxer.
+     *
+     * @param builder
+     *          The project builder.
+     */
     public void build(Builder builder) {
         builder
             .cookbook(JavaProject.class)
