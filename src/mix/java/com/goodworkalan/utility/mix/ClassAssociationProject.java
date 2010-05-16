@@ -4,8 +4,18 @@ import com.goodworkalan.mix.ProjectModule;
 import com.goodworkalan.mix.builder.Builder;
 import com.goodworkalan.mix.builder.JavaProject;
 
-public class ClassAssociationProject extends ProjectModule {
-    @Override
+/**
+ * Builds the project definition for Class Association.
+ *
+ * @author Alan Gutierrez
+ */
+public class ClassAssociationProject implements ProjectModule {
+    /**
+     * Build the project definition for Class Association.
+     *
+     * @param builder
+     *          The project builder.
+     */
     public void build(Builder builder) {
         builder
             .cookbook(JavaProject.class)
