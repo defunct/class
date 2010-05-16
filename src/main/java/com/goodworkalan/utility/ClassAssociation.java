@@ -54,12 +54,13 @@ public class ClassAssociation<T> {
      */
     private final ConcurrentMap<Class<?>, T> cache = new ConcurrentHashMap<Class<?>, T>();
 
-    /** Map of assigned classes to object diffusers. */
-    private final ConcurrentMap<Class<?>, T> derived = new ConcurrentHashMap<Class<?>, T>();
+    /** Map of assignable classes to values. */
+    private final ConcurrentMap<Class<?>, T> assignable = new ConcurrentHashMap<Class<?>, T>();
 
-    /** Map of assigned classes to object diffusers. */
+    /** Map of exact classes to values. */
     private final ConcurrentMap<Class<?>, T> exact = new ConcurrentHashMap<Class<?>, T>();
     
+    /** Map of class annotations to values. */
     private final ConcurrentMap<Class<? extends Annotation>, T> annotated = new ConcurrentHashMap<Class<? extends Annotation>, T>();
     
     /**
@@ -78,7 +79,7 @@ public class ClassAssociation<T> {
      */
     public ClassAssociation(ClassAssociation<T> copy) {
         exact.putAll(copy.exact);
-        derived.putAll(copy.derived);
+        assignable.putAll(copy.assignable);
         annotated.putAll(copy.annotated);
     }
 
@@ -108,7 +109,7 @@ public class ClassAssociation<T> {
      * sub-classes of the given <code>type</code> or implementations of the
      * given <code>type</code> . The value will match an assignable association
      * if there is no exact association or annotation association that matches
-     * the given <code>type</code> in this class assocition.
+     * the given <code>type</code> in this class association.
      * <p>
      * If a type can match multiple super-classes or interfaces, it will match
      * the first mapping or interface association encountered when inspecting
@@ -132,7 +133,7 @@ public class ClassAssociation<T> {
      */
     public void assignable(Class<?> type, T value) {
         cache.clear();
-        derived.put(type, value);
+        assignable.put(type, value);
     }
 
     /**
@@ -170,7 +171,7 @@ public class ClassAssociation<T> {
         LinkedList<Class<?>> queue = new LinkedList<Class<?>>(Arrays.asList(interfaces));
         while (!queue.isEmpty()) {
             Class<?> iface = queue.removeFirst();
-            T value = derived.get(iface);
+            T value = assignable.get(iface);
             if (value != null) {
                 return value;
             }
@@ -230,7 +231,7 @@ public class ClassAssociation<T> {
             if (value == null) {
                 Class<?> iterator = type;
                 while (iterator != null) {
-                    value = derived.get(iterator);
+                    value = assignable.get(iterator);
                     if (value == null) {
                         value = byInterface(iterator.getInterfaces());
                     }
