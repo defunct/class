@@ -2,7 +2,7 @@ package com.goodworkalan.utility.mix;
 
 import com.goodworkalan.mix.ProjectModule;
 import com.goodworkalan.mix.builder.Builder;
-import com.goodworkalan.mix.builder.JavaProject;
+import com.goodworkalan.mix.cookbook.JavaProject;
 
 /**
  * Builds the project definition for Class Boxer.
@@ -20,10 +20,8 @@ public class ClassBoxerProject implements ProjectModule {
         builder
             .cookbook(JavaProject.class)
                 .produces("com.github.bigeasy.class-boxer/class-boxer/0.1")
-                .test()
-                    .depends()
-                        .include("org.testng/testng-jdk15/5.10")
-                        .end()
+                .depends()
+                    .development("org.testng/testng-jdk15/5.10")
                     .end()
                 .end()
             .end();
