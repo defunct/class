@@ -19,7 +19,7 @@ public class ClassBoxerProject implements ProjectModule {
     public void build(Builder builder) {
         builder
             .cookbook(JavaProject.class)
-                .produces("com.github.bigeasy.class-boxer/class-boxer/0.1")
+                .produces("com.github.bigeasy.class/class-boxer/0.1")
                 .depends()
                     .development("org.testng/testng-jdk15/5.10")
                     .end()
