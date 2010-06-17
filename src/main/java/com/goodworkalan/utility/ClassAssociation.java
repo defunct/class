@@ -128,7 +128,7 @@ public class ClassAssociation<T> {
      * 
      * @param type
      *            The object type.
-     * @param converter
+     * @param value
      *            The value to associate with the type.
      */
     public void assignable(Class<?> type, T value) {
@@ -146,9 +146,9 @@ public class ClassAssociation<T> {
      * Annotations applied to super-classes or interfaces implemented by the
      * type will not be considered when determining the match.
      * 
-     * @param type
+     * @param annotation
      *            The annotation type.
-     * @param converter
+     * @param value
      *            The value to associate with the annotation type.
      */
     public void annotated(Class<? extends Annotation> annotation, T value) {
