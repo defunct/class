@@ -46,11 +46,8 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class ClassAssociation<T> {
     /**
-     * The classes to their object diffusers as resolved by ascending the object
-     * hierarchy, looking for an object diffuser that will diffuse a super class
-     * or interface. This cache is reset when a new object diffuser is assigned
-     * using the {@link #setConverter(Class, ObjectDiffuser) setConverter}
-     * method.
+     * Cache of classes to there associated types, resolved by inspecting the
+     * stipulated types, and cleared when new stipulations are given.
      */
     private final ConcurrentMap<Class<?>, T> cache = new ConcurrentHashMap<Class<?>, T>();
 
