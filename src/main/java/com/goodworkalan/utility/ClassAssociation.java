@@ -186,26 +186,6 @@ public class ClassAssociation<T> {
      */
 
     /**
-     * Scans the given array of annotations in order and returns the associated
-     * value of the first annotation that has an associated value, or null if
-     * none of the associations have an associated value.
-     * 
-     * @param annotations
-     *            An array of annotations to check for associated values.
-     * @return The first associated value found or null.
-     */
-    private T byAnnotation(Annotation[] annotations) {
-        for (Annotation annotation : annotations) {
-            for (Map.Entry<Class<? extends Annotation>, T> entry : annotated.entrySet()) {
-                if (entry.getKey().isAssignableFrom(annotation.getClass())) {
-                    return entry.getValue();
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
      * Get the object converter for the given object type.
      * 
      * @param type
@@ -223,7 +203,12 @@ public class ClassAssociation<T> {
             }
             value = exact.get(type);
             if (value == null) {
-                value = byAnnotation(type.getAnnotations());
+                for (Map.Entry<Class<? extends Annotation>, T> entry : annotated.entrySet()) {
+                    if (type.isAnnotationPresent(entry.getKey())) {
+                        value = entry.getValue();
+                        break;
+                    }
+                }
             }
             if (value == null) {
                 Class<?> iterator = type;
